@@ -3,7 +3,6 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
 from taskapp.api import views
-from rest_framework.authtoken.views import obtain_auth_token
 
 
 

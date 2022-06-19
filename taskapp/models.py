@@ -9,10 +9,11 @@ from rest_framework.authtoken.models import Token
 
 
 class CustomUser(AbstractUser):
+    email = models.EmailField(null=False, blank=False)
     role = models.CharField(choices=UserRole.CHOICES, max_length=255)
 
     def __str__(self):
-        return self.username
+        return self.email + ' role - ' + self.role
 
     @receiver(post_save, sender=settings.AUTH_USER_MODEL)
     def create_auth_token(sender, instance=None, created=False, **kwargs):
@@ -49,8 +50,9 @@ class TeamToMember(models.Model):
     member = models.ForeignKey(CustomUser, on_delete=models.CASCADE,
                      limit_choices_to={'role': UserRole.TEAM_MEMBER})
 
+
     def __str__(self):
-        return self.member.username + ' member of - ' + self.team.name
+        return self.member.email + ' member of team - ' + self.team.name
 
 
 class TaskAssignedToMember(models.Model):
@@ -59,7 +61,7 @@ class TaskAssignedToMember(models.Model):
                      limit_choices_to={'role': UserRole.TEAM_MEMBER})
 
     def __str__(self):
-        return self.task.name + ' assigned to - ' + self.member.username
+        return self.task.name + ' assigned to - ' + self.member.email
 
 
 

@@ -4,11 +4,8 @@ from ..validations import TaskValidations
 from taskapp.models import *
 from .serializers import *
 from rest_framework.response import Response
-from rest_framework.parsers import JSONParser
 from rest_framework.views import APIView
-
-
-
+from Utils.utils import *
 
 
 
@@ -21,6 +18,9 @@ class TeamViewSet(viewsets.ModelViewSet):
             serializer = TeamSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
+                # add members to team
+                add_team_members(request.data.get('members'), serializer.data['id'])
+
                 return Response({"message": "success", "data": serializer.data}, 201)
             return Response(serializer.errors, 400)
         
@@ -53,6 +53,9 @@ class TaskViewSet(APIView):
             serializer = TaskSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
+                # function to notify team leader after task creation 
+                send_task_creation_notification(serializer.data['id'])
+                
                 return Response(serializer.data, 201)
             return Response(serializer.errors, 400)
         
